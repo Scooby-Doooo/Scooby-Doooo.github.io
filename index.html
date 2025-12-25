@@ -19,6 +19,7 @@
             --danger: #ef4444;
             --border: #e2e8f0;
             --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --highlight: #dbeafe; /* Blue 100 */
         }
 
         body {
@@ -26,7 +27,7 @@
             background-color: var(--bg);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
+            padding: 16px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -45,7 +46,7 @@
         h1 { margin: 0; font-size: 1.25rem; font-weight: 800; color: var(--text-main); text-transform: uppercase; letter-spacing: 1px; }
         .subtitle { font-size: 0.85rem; color: var(--text-light); margin-top: 4px; }
 
-        /* Controls Bar */
+        /* Controls */
         .controls {
             display: flex;
             justify-content: space-between;
@@ -58,7 +59,6 @@
             gap: 10px;
         }
         
-        /* Auto Switch */
         .switch-wrapper { display: flex; align-items: center; gap: 8px; flex: 1; }
         .switch-label { font-size: 0.8rem; font-weight: 600; line-height: 1.2; }
         .switch { position: relative; display: inline-block; width: 40px; height: 22px; flex-shrink: 0; }
@@ -68,22 +68,22 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(18px); }
 
-        /* Trade Button (Small) */
         .btn-icon {
             background: #eff6ff;
-            color: #3b82f6;
+            color: #2563eb;
             border: none;
             border-radius: 8px;
-            padding: 8px 12px;
+            padding: 8px 16px;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 6px;
             transition: background 0.2s;
+            box-shadow: 0 2px 0 #bfdbfe;
         }
-        .btn-icon:active { background: #dbeafe; transform: scale(0.95); }
+        .btn-icon:active { transform: translateY(2px); box-shadow: none; }
 
         /* Farm Grid */
         .card {
@@ -106,7 +106,6 @@
 
         .input-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 24px; }
         .dog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 0 20px; }
-
         .animal-unit { display: flex; flex-direction: column; align-items: center; }
         .animal-icon { font-size: 1.6rem; margin-bottom: 6px; }
         
@@ -118,7 +117,7 @@
         }
         input[type="tel"]:focus { outline: none; border-color: var(--primary); background: #fff; }
 
-        /* Dice Section */
+        /* Dice */
         .dice-container { display: flex; justify-content: center; gap: 20px; margin: 10px 0 24px 0; perspective: 1000px; }
         .die {
             width: 75px; height: 75px;
@@ -133,7 +132,7 @@
         .die-icon { font-size: 2.2rem; line-height: 1; }
         .die-label { font-size: 0.6rem; font-weight: 700; color: var(--text-light); margin-top: 2px; text-transform: uppercase; }
 
-        /* Status & Logs */
+        /* Status */
         .status-area { min-height: 50px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; }
         .alert-box {
             padding: 12px; border-radius: 10px; font-weight: 600; font-size: 0.9rem;
@@ -144,7 +143,6 @@
         .alert-success { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
         .alert-info { text-align: center; color: var(--text-light); font-style: italic; font-size: 0.85rem; }
 
-        /* Main Button */
         .btn {
             width: 100%; padding: 16px; border: none; border-radius: 12px;
             font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
@@ -159,54 +157,75 @@
         .btn-danger { background-color: var(--danger); color: white; }
         .btn-secondary { background-color: var(--text-main); color: white; }
 
-        /* --- MODAL STYLES --- */
+        /* --- NEW MARKET MODAL --- */
         .modal-backdrop {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 100;
-            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.6); z-index: 100;
+            display: flex; align-items: flex-end; /* Mobile friendly: bottom sheet */
             opacity: 0; pointer-events: none; transition: opacity 0.3s;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(3px);
         }
         .modal-backdrop.active { opacity: 1; pointer-events: all; }
-        
+        @media (min-width: 500px) { .modal-backdrop { align-items: center; justify-content: center; } }
+
         .modal-content {
-            background: var(--surface); width: 90%; max-width: 360px;
-            border-radius: 20px; padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transform: translateY(20px); transition: transform 0.3s;
+            background: var(--surface); width: 100%; max-width: 500px;
+            border-top-left-radius: 24px; border-top-right-radius: 24px;
+            padding: 24px 20px; box-shadow: 0 -10px 25px rgba(0,0,0,0.2);
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            max-height: 85vh; overflow-y: auto;
+        }
+        @media (min-width: 500px) { 
+            .modal-content { border-radius: 24px; transform: translateY(20px); } 
         }
         .modal-backdrop.active .modal-content { transform: translateY(0); }
 
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-        .close-btn { background: none; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; padding: 0; }
+        .modal-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+        .close-btn { background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 1.2rem; color: #64748b; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        .trade-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        .trade-select {
-            padding: 10px; border-radius: 10px; border: 2px solid var(--border);
-            font-size: 1rem; width: 45%; background: #fff;
-        }
-        .trade-arrow { font-size: 1.2rem; color: var(--text-light); }
+        /* Market UI */
+        .market-label { font-size: 0.85rem; font-weight: 700; color: var(--text-light); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px; }
         
-        .trade-info {
-            background: #f0f9ff; color: #0369a1; padding: 10px;
-            border-radius: 8px; font-size: 0.9rem; text-align: center;
-            margin-bottom: 20px; border: 1px solid #bae6fd;
+        /* 1. Source Selector */
+        .source-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
+        .source-grid::-webkit-scrollbar { display: none; }
+        
+        .source-item {
+            flex: 0 0 auto;
+            display: flex; flex-direction: column; align-items: center;
+            background: #f8fafc; border: 2px solid var(--border);
+            padding: 10px; border-radius: 12px; cursor: pointer;
+            min-width: 60px; transition: all 0.2s;
         }
+        .source-item.active { border-color: var(--primary); background: #ecfdf5; transform: scale(1.05); }
+        .source-icon { font-size: 1.8rem; margin-bottom: 4px; }
+        .source-name { font-size: 0.7rem; font-weight: 600; color: var(--text-main); }
 
-        .amount-ctrl { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .btn-circle {
-            width: 40px; height: 40px; border-radius: 50%; border: none;
-            background: #e2e8f0; font-size: 1.2rem; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
+        /* 2. Offers List */
+        .offers-list { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; min-height: 100px; }
+        .empty-offers { text-align: center; color: var(--text-light); padding: 20px; font-style: italic; }
+
+        .offer-card {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #fff; border: 1px solid var(--border);
+            padding: 12px 16px; border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
         }
-        .trade-amount { font-size: 1.5rem; font-weight: 800; width: 50px; text-align: center; }
+        .offer-info { display: flex; flex-direction: column; }
+        .offer-text { font-weight: 700; font-size: 1rem; color: var(--text-main); }
+        .offer-cost { font-size: 0.8rem; color: var(--danger); margin-top: 2px; font-weight: 600; }
+        
+        .offer-action { display: flex; align-items: center; gap: 10px; }
+        .trade-btn {
+            background: var(--text-main); color: white;
+            border: none; padding: 10px 16px; border-radius: 8px;
+            font-weight: 700; cursor: pointer;
+        }
+        .trade-btn:active { transform: scale(0.95); }
 
         /* Animations */
-        @keyframes shake {
-            0% { transform: rotate(0deg); } 25% { transform: rotate(10deg); }
-            50% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); }
-        }
+        @keyframes shake { 0% { transform: rotate(0deg); } 25% { transform: rotate(10deg); } 50% { transform: rotate(-10deg); } 75% { transform: rotate(5deg); } 100% { transform: rotate(0deg); } }
         .shaking { animation: shake 0.4s ease-in-out infinite; }
         .changed { animation: flashGreen 1s ease-out; }
         @keyframes flashGreen { 50% { background-color: #bbf7d0; transform: scale(1.05); } }
@@ -280,100 +299,71 @@
                 <button class="close-btn" onclick="closeTradeModal()">&times;</button>
             </div>
             
-            <div class="trade-row">
-                <select id="tradeFrom" class="trade-select" onchange="updateTradeCalc()">
-                    <option value="rabbit">🐰 Заєць</option>
-                    <option value="sheep">🐑 Вівця</option>
-                    <option value="pig">🐷 Свиня</option>
-                    <option value="cow">🐮 Корова</option>
-                    <option value="horse">🐴 Кінь</option>
-                    <option value="small-dog">🐕 Мала</option>
-                    <option value="big-dog">🐕‍🦺 Велика</option>
-                </select>
-                <div class="trade-arrow">➡️</div>
-                <select id="tradeTo" class="trade-select" onchange="updateTradeCalc()">
-                    </select>
-            </div>
+            <div class="market-label">1. Що хочеш продати?</div>
+            <div class="source-grid" id="sourceGrid">
+                </div>
 
-            <div id="tradeRateInfo" class="trade-info">
-                Курс: ...
+            <div class="market-label" style="margin-top: 20px">2. Доступні пропозиції</div>
+            <div class="offers-list" id="offersList">
+                <div class="empty-offers">Обери тварину зверху</div>
             </div>
-
-            <div class="section-header">Кількість для отримання</div>
-            <div class="amount-ctrl">
-                <button class="btn-circle" onclick="changeAmount(-1)">-</button>
-                <div class="trade-amount" id="tradeAmount">1</div>
-                <button class="btn-circle" onclick="changeAmount(1)">+</button>
-            </div>
-
-            <button class="btn btn-primary" onclick="performTrade()">Обміняти</button>
         </div>
     </div>
 
     <script>
-        // --- CONFIG & RULES (GRANNA VERSION) ---
+        // --- GAME DATA ---
+        const NAMES = {
+            'rabbit': 'Заєць', 'sheep': 'Вівця', 'pig': 'Свиня', 
+            'cow': 'Корова', 'horse': 'Кінь', 'small-dog': 'Мала', 'big-dog': 'Велика'
+        };
+        const ICONS = {
+            'rabbit': '🐰', 'sheep': '🐑', 'pig': '🐷', 
+            'cow': '🐮', 'horse': '🐴', 'small-dog': '🐕', 'big-dog': '🐕‍🦺'
+        };
+
+        // ТАБЛИЦЯ ОБМІНУ (GRANNA)
+        // Структура: 'хто_продається': [ { target: 'хто_купується', pay: скільки_віддати, get: скільки_отримати } ]
+        const OFFERS = {
+            'rabbit': [
+                { target: 'sheep', pay: 6, get: 1 } // 6 Зайців -> 1 Вівця
+            ],
+            'sheep': [
+                { target: 'rabbit', pay: 1, get: 6 }, // 1 Вівця -> 6 Зайців
+                { target: 'pig', pay: 2, get: 1 },    // 2 Вівці -> 1 Свиня
+                { target: 'small-dog', pay: 1, get: 1 } // 1 Вівця -> 1 Мала собака
+            ],
+            'pig': [
+                { target: 'sheep', pay: 1, get: 2 },  // 1 Свиня -> 2 Вівці
+                { target: 'cow', pay: 3, get: 1 }     // 3 Свині -> 1 Корова
+            ],
+            'cow': [
+                { target: 'pig', pay: 1, get: 3 },    // 1 Корова -> 3 Свині
+                { target: 'horse', pay: 2, get: 1 },  // 2 Корови -> 1 Кінь
+                { target: 'big-dog', pay: 1, get: 1 } // 1 Корова -> 1 Велика собака
+            ],
+            'horse': [
+                { target: 'cow', pay: 1, get: 2 }     // 1 Кінь -> 2 Корови
+            ],
+            'small-dog': [
+                { target: 'sheep', pay: 1, get: 1 }   // 1 Мала -> 1 Вівця
+            ],
+            'big-dog': [
+                { target: 'cow', pay: 1, get: 1 }     // 1 Велика -> 1 Корова
+            ]
+        };
+
         const DIE_GREEN = [
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'},
-            {id:'sheep', icon:'🐑', name:'Вівця'}, {id:'sheep', icon:'🐑', name:'Вівця'},
-            {id:'sheep', icon:'🐑', name:'Вівця'}, 
-            {id:'pig', icon:'🐷', name:'Свиня'}, 
-            {id:'cow', icon:'🐮', name:'Корова'}, 
-            {id:'wolf', icon:'🐺', name:'Вовк'}
-        ];
+            {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'},
+            {id:'sheep'}, {id:'sheep'}, {id:'sheep'}, {id:'pig'}, {id:'cow'}, {id:'wolf'}
+        ].map(d => ({...d, icon: ICONS[d.id], name: NAMES[d.id]}));
 
         const DIE_RED = [
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
-            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'},
-            {id:'sheep', icon:'🐑', name:'Вівця'}, {id:'sheep', icon:'🐑', name:'Вівця'},
-            {id:'pig', icon:'🐷', name:'Свиня'}, {id:'pig', icon:'🐷', name:'Свиня'},
-            {id:'horse', icon:'🐴', name:'Кінь'},
-            {id:'fox', icon:'🦊', name:'Лисиця'}
-        ];
+            {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'}, {id:'rabbit'},
+            {id:'sheep'}, {id:'sheep'}, {id:'pig'}, {id:'pig'}, {id:'horse'}, {id:'fox'}
+        ].map(d => ({...d, icon: ICONS[d.id], name: NAMES[d.id]}));
 
-        // --- EXCHANGE RULES ---
-        // Basic Value in Rabbits: Rabbit=1, Sheep=6, Pig=12, Cow=36, Horse=72, SmallDog=6, BigDog=36
-        // Direct Trades defined by box rules:
-        const TRADE_PAIRS = {
-            'rabbit': ['sheep'],
-            'sheep': ['rabbit', 'pig', 'small-dog'],
-            'pig': ['sheep', 'cow'],
-            'cow': ['pig', 'horse', 'big-dog'],
-            'horse': ['cow'],
-            'small-dog': ['sheep'],
-            'big-dog': ['cow']
-        };
-
-        const RATES = {
-            'rabbit_sheep': 6,  // 6 Rabbits -> 1 Sheep
-            'sheep_rabbit': 1/6,// 1 Sheep -> 6 Rabbits
-            
-            'sheep_pig': 2,     // 2 Sheep -> 1 Pig
-            'pig_sheep': 0.5,   // 1 Pig -> 2 Sheep
-            
-            'pig_cow': 3,       // 3 Pigs -> 1 Cow
-            'cow_pig': 1/3,     // 1 Cow -> 3 Pigs
-            
-            'cow_horse': 2,     // 2 Cows -> 1 Horse
-            'horse_cow': 0.5,   // 1 Horse -> 2 Cows
-
-            'sheep_small-dog': 1, // 1 Sheep -> 1 Small Dog
-            'small-dog_sheep': 1, // 1 Small Dog -> 1 Sheep
-
-            'cow_big-dog': 1,     // 1 Cow -> 1 Big Dog
-            'big-dog_cow': 1      // 1 Big Dog -> 1 Cow
-        };
-
-        const NAMES = {
-            'rabbit': '🐰', 'sheep': '🐑', 'pig': '🐷', 'cow': '🐮', 'horse': '🐴',
-            'small-dog': '🐕', 'big-dog': '🐕‍🦺'
-        };
-
-        // --- STATE & UTILS ---
+        // --- CORE ---
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
         function getVal(id) { return parseInt(document.getElementById(`inp-${id}`).value) || 0; }
         function setVal(id, val) { 
             const el = document.getElementById(`inp-${id}`);
@@ -389,11 +379,16 @@
             const gain = audioCtx.createGain();
             osc.connect(gain);
             gain.connect(audioCtx.destination);
-            
             const now = audioCtx.currentTime;
+            
             if (type === 'roll') {
                 osc.frequency.setValueAtTime(150, now);
                 osc.frequency.linearRampToValueAtTime(50, now + 0.15);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.linearRampToValueAtTime(0, now + 0.15);
+            } else if (type === 'trade') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, now);
                 gain.gain.setValueAtTime(0.1, now);
                 gain.gain.linearRampToValueAtTime(0, now + 0.15);
             } else if (type === 'danger') {
@@ -402,28 +397,17 @@
                 osc.frequency.linearRampToValueAtTime(50, now + 0.3);
                 gain.gain.setValueAtTime(0.2, now);
                 gain.gain.linearRampToValueAtTime(0, now + 0.3);
-            } else if (type === 'success') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.2);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0, now + 0.2);
-            } else if (type === 'trade') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, now);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.linearRampToValueAtTime(0, now + 0.15);
             }
             osc.start(); osc.stop(now + 0.5);
         }
 
+        // --- DICE LOGIC ---
         function getSecureRandom(arr) {
             const cryptoArr = new Uint32Array(1);
             window.crypto.getRandomValues(cryptoArr);
             return arr[cryptoArr[0] % arr.length];
         }
 
-        // --- GAME LOGIC ---
         document.getElementById('rollBtn').addEventListener('click', () => {
             const btn = document.getElementById('rollBtn');
             const d1El = document.getElementById('d1');
@@ -435,8 +419,6 @@
             d1El.classList.add('shaking');
             d2El.classList.add('shaking');
             playTone('roll');
-
-            if (navigator.vibrate) navigator.vibrate(20);
 
             setTimeout(() => {
                 d1El.classList.remove('shaking');
@@ -452,7 +434,6 @@
                 document.getElementById('d2-label').innerText = r2.name;
 
                 processRound(r1, r2);
-
             }, 500);
         });
 
@@ -466,239 +447,163 @@
             if (isWolf || isFox) {
                 playTone('danger');
                 if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-
                 let alertBox = document.createElement('div');
                 alertBox.className = 'alert-box alert-danger';
                 
-                let msg = `⚠️ УВАГА: `;
-                if (isWolf && isFox) msg += "ВОВК ТА ЛИСИЦЯ!";
-                else if (isWolf) msg += "ВОВК!";
-                else if (isFox) msg += "ЛИСИЦЯ!";
-                alertBox.innerHTML = `<span>${msg}</span>`;
+                let msg = isWolf && isFox ? "ВОВК ТА ЛИСИЦЯ!" : (isWolf ? "ВОВК!" : "ЛИСИЦЯ!");
+                alertBox.innerHTML = `<span>⚠️ ${msg}</span>`;
 
                 if (isFox) {
                     const group = document.createElement('div');
                     group.className = 'btn-action-group';
-                    group.innerHTML = `
-                        <button class="btn btn-sm btn-secondary" onclick="useDog('small', this)">🐕 -1 Собака</button>
-                        <button class="btn btn-sm btn-danger" onclick="applyFoxDamage(this)">🦊 Списати</button>
-                    `;
+                    group.innerHTML = `<button class="btn btn-sm btn-secondary" onclick="useDog('small', this)">🐕 -1 Собака</button><button class="btn btn-sm btn-danger" onclick="applyFoxDamage(this)">🦊 Списати</button>`;
                     alertBox.appendChild(group);
                 }
-
                 if (isWolf) {
                     const group = document.createElement('div');
                     group.className = 'btn-action-group';
-                    group.innerHTML = `
-                        <button class="btn btn-sm btn-secondary" onclick="useDog('big', this)">🐕‍🦺 -1 Собака</button>
-                        <button class="btn btn-sm btn-danger" onclick="applyWolfDamage(this)">🐺 Списати</button>
-                    `;
+                    group.innerHTML = `<button class="btn btn-sm btn-secondary" onclick="useDog('big', this)">🐕‍🦺 -1 Собака</button><button class="btn btn-sm btn-danger" onclick="applyWolfDamage(this)">🐺 Списати</button>`;
                     alertBox.appendChild(group);
                 }
-
                 statusArea.appendChild(alertBox);
-                
-                const potential = calculateGrowth(r1, r2);
-                if (potential.length > 0) {
-                    let info = document.createElement('div');
-                    info.className = 'alert-info';
-                    info.innerHTML = `Якщо вижили, додайте вручну: <br><b>${potential.join(', ')}</b>`;
-                    statusArea.appendChild(info);
-                }
                 return;
             }
 
-            // GROWTH
-            playTone('success');
-            const changes = calculateGrowth(r1, r2);
+            // Normal Growth
+            let counts = {};
+            [r1, r2].forEach(r => counts[r.id] = (counts[r.id] || 0) + 1);
+            let changes = [];
             
+            ['rabbit', 'sheep', 'pig', 'cow', 'horse'].forEach(type => {
+                let onDice = counts[type] || 0;
+                if (onDice > 0) {
+                    let onFarm = getVal(type);
+                    let newBorn = Math.floor((onFarm + onDice) / 2);
+                    if (newBorn > 0) {
+                        changes.push(`+${newBorn} ${ICONS[type]}`);
+                        if (autoMode) setVal(type, onFarm + newBorn);
+                    }
+                }
+            });
+
             if (changes.length > 0) {
+                playTone('trade'); // success tone
                 let successBox = document.createElement('div');
                 successBox.className = 'alert-box alert-success';
                 successBox.innerHTML = `🎉 Приріст:<br>${changes.join(', ')}`;
                 statusArea.appendChild(successBox);
-
-                if (autoMode) applyGrowthLogic(r1, r2);
             } else {
                 statusArea.innerHTML = '<div class="alert-info">Без приросту</div>';
             }
             checkVictory();
         }
 
-        function calculateGrowth(r1, r2) {
-            let counts = {};
-            [r1, r2].forEach(r => counts[r.id] = (counts[r.id] || 0) + 1);
-            let result = [];
-            ['rabbit', 'sheep', 'pig', 'cow', 'horse'].forEach(type => {
-                let onDice = counts[type] || 0;
-                if (onDice > 0) {
-                    let onFarm = getVal(type);
-                    let newBorn = Math.floor((onFarm + onDice) / 2);
-                    if (newBorn > 0) result.push(`+${newBorn} ${NAMES[type]}`);
-                }
-            });
-            return result;
-        }
-
-        function applyGrowthLogic(r1, r2) {
-            let counts = {};
-            [r1, r2].forEach(r => counts[r.id] = (counts[r.id] || 0) + 1);
-            ['rabbit', 'sheep', 'pig', 'cow', 'horse'].forEach(type => {
-                let onDice = counts[type] || 0;
-                if (onDice > 0) {
-                    let onFarm = getVal(type);
-                    let newBorn = Math.floor((onFarm + onDice) / 2);
-                    if (newBorn > 0) setVal(type, onFarm + newBorn);
-                }
-            });
-        }
-
-        // --- TRADE MODAL LOGIC ---
+        // --- NEW TRADE UI LOGIC ---
         function openTradeModal() {
             document.getElementById('tradeModal').classList.add('active');
-            updateTradeToOptions();
+            renderSourceGrid();
         }
         function closeTradeModal() {
             document.getElementById('tradeModal').classList.remove('active');
         }
 
-        // Update "To" dropdown based on "From" selection
-        function updateTradeToOptions() {
-            const from = document.getElementById('tradeFrom').value;
-            const toSelect = document.getElementById('tradeTo');
-            toSelect.innerHTML = '';
+        function renderSourceGrid() {
+            const grid = document.getElementById('sourceGrid');
+            grid.innerHTML = '';
             
-            const allowed = TRADE_PAIRS[from] || [];
-            allowed.forEach(target => {
-                const opt = document.createElement('option');
-                opt.value = target;
-                opt.innerText = `${NAMES[target] || ''} ${formatName(target)}`;
-                toSelect.appendChild(opt);
+            // Order: Rabbit -> Big Dog
+            const order = ['rabbit', 'sheep', 'pig', 'cow', 'horse', 'small-dog', 'big-dog'];
+            
+            order.forEach(id => {
+                const el = document.createElement('div');
+                el.className = 'source-item';
+                el.onclick = () => selectSource(id, el);
+                el.innerHTML = `
+                    <div class="source-icon">${ICONS[id]}</div>
+                    <div class="source-name">${NAMES[id]}</div>
+                `;
+                grid.appendChild(el);
             });
-            updateTradeCalc();
-        }
-
-        let currentTradeAmount = 1;
-
-        function changeAmount(delta) {
-            currentTradeAmount = Math.max(1, currentTradeAmount + delta);
-            document.getElementById('tradeAmount').innerText = currentTradeAmount;
-            updateTradeCalc();
-        }
-
-        function updateTradeCalc() {
-            const from = document.getElementById('tradeFrom').value;
-            const to = document.getElementById('tradeTo').value;
-            const rateKey = `${from}_${to}`;
-            let rate = RATES[rateKey];
-
-            const infoEl = document.getElementById('tradeRateInfo');
             
-            if (!rate) {
-                // Try reverse rate math if implicit? No, explicit table is safer.
-                infoEl.innerText = "Обмін неможливий";
+            // Auto-select first
+            selectSource('rabbit', grid.firstChild);
+        }
+
+        function selectSource(sourceId, el) {
+            // Highlight UI
+            document.querySelectorAll('.source-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            // Show Offers
+            const list = document.getElementById('offersList');
+            list.innerHTML = '';
+            
+            const offers = OFFERS[sourceId];
+            if (!offers || offers.length === 0) {
+                list.innerHTML = '<div class="empty-offers">Немає варіантів обміну для цієї тварини</div>';
                 return;
             }
 
-            // Calculation
-            // If Rate is > 1 (e.g. 6 rabbits = 1 sheep). I give 6*N rabbits, get 1*N sheep.
-            // If Rate is < 1 (e.g. 1 sheep = 6 rabbits). Wait, logic inverse.
+            offers.forEach(offer => {
+                const card = document.createElement('div');
+                card.className = 'offer-card';
+                card.innerHTML = `
+                    <div class="offer-info">
+                        <span class="offer-text">Отримати ${offer.get} ${ICONS[offer.target]}</span>
+                        <span class="offer-cost">Ціна: ${offer.pay} ${ICONS[sourceId]}</span>
+                    </div>
+                    <div class="offer-action">
+                        <button class="trade-btn" onclick="executeTrade('${sourceId}', '${offer.target}', ${offer.pay}, ${offer.get})">
+                            Купити
+                        </button>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function executeTrade(sourceId, targetId, cost, gain) {
+            const currentSource = getVal(sourceId);
             
-            // Let's standarize: RATE is "How many FROM units needed for 1 TO unit"
-            // Rabbit->Sheep (Rate 6). Need 6 Rabbit for 1 Sheep.
-            // Sheep->Rabbit (Rate 1/6). Need 0.16 Sheep for 1 Rabbit? No. 
-            // 1 Sheep = 6 Rabbits. So Cost is 1, Gain is 6.
-
-            let cost = 0;
-            let gain = currentTradeAmount; // We want to buy N items
-
-            if (rate >= 1) {
-                // "Upscaling" or Equal (6 Rabbits -> 1 Sheep)
-                cost = rate * currentTradeAmount;
+            if (currentSource >= cost) {
+                if (confirm(`Обміняти ${cost} ${NAMES[sourceId]} на ${gain} ${NAMES[targetId]}?`)) {
+                    setVal(sourceId, currentSource - cost);
+                    setVal(targetId, getVal(targetId) + gain);
+                    playTone('trade');
+                    if (navigator.vibrate) navigator.vibrate(50);
+                    checkVictory();
+                }
             } else {
-                // "Downscaling" (1 Sheep -> 6 Rabbits). 
-                // Logic: 1 Sheep = 6 Rabbits.
-                // If I want 6 Rabbits, cost is 1 Sheep.
-                // Formula: Cost = Want * Rate?  6 * (1/6) = 1. Yes.
-                cost = currentTradeAmount * rate;
-            }
-            
-            // Check if cost is integer (can't trade half a sheep)
-            if (!Number.isInteger(cost)) {
-                 infoEl.innerHTML = `<span style="color:var(--danger)">Неправильна кількість для обміну!</span><br>Потрібно кратно ${1/rate}`;
-            } else {
-                infoEl.innerHTML = `Віддати: <b>${cost} ${NAMES[from]}</b><br>Отримати: <b>${gain} ${NAMES[to]}</b>`;
+                alert(`Не вистачає тварин! Потрібно ${cost} ${NAMES[sourceId]}, а є ${currentSource}.`);
             }
         }
 
-        function performTrade() {
-            const from = document.getElementById('tradeFrom').value;
-            const to = document.getElementById('tradeTo').value;
-            const rateKey = `${from}_${to}`;
-            const rate = RATES[rateKey];
-
-            let cost = (rate >= 1) ? rate * currentTradeAmount : currentTradeAmount * rate;
-
-            if (!Number.isInteger(cost)) {
-                alert("Неможливо здійснити обмін: неціла кількість тварин.");
-                return;
-            }
-
-            const currentStock = getVal(from);
-            if (currentStock >= cost) {
-                setVal(from, currentStock - cost);
-                setVal(to, getVal(to) + currentTradeAmount);
-                playTone('trade');
-                closeTradeModal();
-                checkVictory();
-            } else {
-                alert(`Не вистачає тварин! Потрібно ${cost} ${NAMES[from]}`);
-            }
-        }
-
-        function formatName(id) {
-            const map = {
-                'rabbit':'Заєць', 'sheep':'Вівця', 'pig':'Свиня', 
-                'cow':'Корова', 'horse':'Кінь', 'small-dog':'Мала', 'big-dog':'Велика'
-            };
-            return map[id];
-        }
-
-        // --- HELPER ACTIONS ---
+        // --- HELPERS ---
         window.useDog = function(size, btn) {
             const id = size === 'small' ? 'small-dog' : 'big-dog';
             let current = getVal(id);
             if (current > 0) {
                 setVal(id, current - 1);
                 removeAlertButton(btn);
-            } else {
-                alert("У вас немає такої собаки!");
-            }
+            } else { alert("Немає собаки!"); }
         }
         window.applyFoxDamage = function(btn) {
-            if(confirm("Лисиця з'їсть зайців?")) {
-                setVal('rabbit', 0);
-                removeAlertButton(btn);
-            }
+            if(confirm("Списати зайців?")) { setVal('rabbit', 0); removeAlertButton(btn); }
         }
         window.applyWolfDamage = function(btn) {
-            if(confirm("Вовк з'їсть стадо?")) {
-                setVal('sheep', 0); setVal('pig', 0); setVal('cow', 0);
-                removeAlertButton(btn);
-            }
+            if(confirm("Списати овець, свиней та корів?")) { setVal('sheep', 0); setVal('pig', 0); setVal('cow', 0); removeAlertButton(btn); }
         }
-        function removeAlertButton(btn) {
-            btn.parentElement.style.opacity = '0.5';
-            btn.parentElement.style.pointerEvents = 'none';
+        function removeAlertButton(btn) { 
+            btn.parentElement.style.opacity = '0.5'; 
+            btn.parentElement.style.pointerEvents = 'none'; 
         }
-        
+
         function checkVictory() {
             if (getVal('rabbit')>0 && getVal('sheep')>0 && getVal('pig')>0 && 
                 getVal('cow')>0 && getVal('horse')>0) {
-                
                 let winBox = document.createElement('div');
                 winBox.className = 'alert-box alert-success';
-                winBox.innerHTML = `🏆 <b>ПЕРЕМОГА!</b><br>Ви зібрали Супер Ферму!`;
+                winBox.innerHTML = `🏆 <b>СУПЕР ФЕРМЕР!</b><br>Ви зібрали всіх тварин!`;
                 document.getElementById('statusArea').prepend(winBox);
                 if (navigator.vibrate) navigator.vibrate([200,100,200,100,500]);
             }
