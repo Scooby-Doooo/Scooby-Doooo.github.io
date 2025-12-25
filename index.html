@@ -594,13 +594,22 @@
         function getEmptyFarm() { return {rabbit:0, sheep:0, pig:0, cow:0, horse:0, 'small-dog':0, 'big-dog':0}; }
         
         function switchTab(id, el) {
-            document.querySelectorAll('.view-container').forEach(d => {d.classList.remove('active'); setTimeout(()=>d.style.display='none', 200)});
+            // FIXED LOGIC: Never accidentally hide the tab we want to show
+            document.querySelectorAll('.view-container').forEach(d => {
+                if (d.id === id) {
+                    d.style.display = 'block';
+                    setTimeout(() => d.classList.add('active'), 10);
+                } else {
+                    d.classList.remove('active');
+                    setTimeout(() => {
+                        // Only hide if it's NOT active (prevents race condition)
+                        if (!d.classList.contains('active')) d.style.display = 'none';
+                    }, 200);
+                }
+            });
+
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            const target = document.getElementById(id);
-            target.style.display = 'block';
-            setTimeout(() => target.classList.add('active'), 10);
-            el.classList.add('active');
+            if(el) el.classList.add('active');
         }
 
         function showToast(msg) {
