@@ -1,295 +1,417 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Super Farmer Dice</title>
-    
-    <meta name="theme-color" content="#10b981">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    
+    <title>Супер Фермер: Асистент</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e7d32">
     <style>
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --bg: #f1f8e9;
+            --surface: #ffffff;
+            --text: #1a1a1a;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f3f4f6;
-            touch-action: manipulation; /* Improves touch response */
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* 3D Dice Styling */
-        .die-container {
-            perspective: 1000px;
+        /* Layout Grid */
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
         }
         
+        h1 { margin: 0; font-size: 1.5rem; color: var(--primary-dark); }
+        p { margin: 4px 0 0; color: #666; font-size: 0.9rem; }
+
+        /* Farm State Inputs */
+        .farm-state {
+            background: var(--surface);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            text-align: center;
+        }
+
+        .animal-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .animal-input label { font-size: 1.5rem; margin-bottom: 4px; }
+        
+        .animal-input input {
+            width: 100%;
+            padding: 8px 0;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-dark);
+            -moz-appearance: textfield;
+        }
+        .animal-input input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Dice Section */
+        .dice-area {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+            perspective: 1000px;
+        }
+
         .die {
-            transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05), inset 0 -4px 0 rgba(0,0,0,0.1);
+            width: 100px;
+            height: 100px;
+            background: var(--surface);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 8px 0 #cfd8dc, 0 8px 10px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            border: 2px solid #eceff1;
         }
 
-        /* Animation Classes */
-        .shake {
-            animation: shake 0.5s ease-in-out;
+        .die.blue { border-color: #90caf9; }
+        .die.red { border-color: #ef9a9a; }
+        
+        .die span { display: block; }
+        .die .label { font-size: 0.8rem; color: #555; font-weight: bold; margin-top: 4px; }
+
+        /* Results & Calculations */
+        .result-panel {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
 
+        .growth-info { color: var(--primary); font-weight: bold; font-size: 1.1rem; }
+        .danger-info { color: #d32f2f; font-weight: bold; }
+
+        /* Controls */
+        .btn-main {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-main:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 var(--primary-dark);
+        }
+
+        .danger-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-danger {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Animations */
+        .shake { animation: shake 0.5s ease-in-out; }
         @keyframes shake {
-            0% { transform: translate(1px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(3px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            70% { transform: translate(3px, 1px) rotate(-1deg); }
-            80% { transform: translate(-1px, -1px) rotate(1deg); }
-            90% { transform: translate(1px, 2px) rotate(0deg); }
-            100% { transform: translate(1px, -2px) rotate(-1deg); }
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-5deg) translateY(-5px); }
+            50% { transform: rotate(5deg) translateY(5px); }
+            75% { transform: rotate(-5deg) translateY(-5px); }
         }
 
-        /* Animal Colors */
-        .bg-rabbit { background-color: #ffffff; color: #374151; border: 2px solid #e5e7eb; }
-        .bg-sheep { background-color: #fef3c7; color: #92400e; border: 2px solid #fcd34d; }
-        .bg-pig { background-color: #fce7f3; color: #9d174d; border: 2px solid #fbcfe8; }
-        .bg-cow { background-color: #e0e7ff; color: #3730a3; border: 2px solid #c7d2fe; }
-        .bg-horse { background-color: #ffedd5; color: #9a3412; border: 2px solid #fdba74; }
-        .bg-wolf { background-color: #1f2937; color: #f3f4f6; border: 2px solid #374151; } /* Dark Grey */
-        .bg-fox { background-color: #ea580c; color: #fff7ed; border: 2px solid #c2410c; } /* Orange */
-
-        .history-item {
-            animation: fadeIn 0.3s ease-out forwards;
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
+        /* Media Queries for Landscape/Tablets */
+        @media (min-width: 600px) {
+            .dice-area { gap: 40px; }
+            .die { width: 120px; height: 120px; }
         }
     </style>
 </head>
-<body class="h-screen flex flex-col items-center justify-between p-4 max-w-md mx-auto">
+<body>
+    <div class="container">
+        <header>
+            <h1>Супер Фермер</h1>
+            <p>Асистент та калькулятор</p>
+        </header>
 
-    <header class="w-full text-center pt-4 mb-4">
-        <h1 class="text-3xl font-bold text-gray-800 tracking-tight">Super Farmer</h1>
-        <p class="text-sm text-gray-500 mt-1">Dice Simulator</p>
-    </header>
-
-    <main class="flex-grow flex flex-col justify-center w-full gap-8 mb-8">
-        
-        <div class="die-container w-full flex flex-col items-center">
-            <span class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Blue Die</span>
-            <div id="die1" class="die w-32 h-32 flex flex-col items-center justify-center rounded-2xl bg-white text-6xl">
-                <span>❓</span>
+        <section class="farm-state">
+            <p style="text-align:center; margin-bottom:10px; font-weight:bold; color:#555;">Твоє стадо (введи кількість):</p>
+            <div class="farm-grid">
+                <div class="animal-input"><label>🐰</label><input type="tel" id="inp-rabbit" value="0" min="0"></div>
+                <div class="animal-input"><label>🐑</label><input type="tel" id="inp-sheep" value="0" min="0"></div>
+                <div class="animal-input"><label>🐷</label><input type="tel" id="inp-pig" value="0" min="0"></div>
+                <div class="animal-input"><label>🐮</label><input type="tel" id="inp-cow" value="0" min="0"></div>
+                <div class="animal-input"><label>🐴</label><input type="tel" id="inp-horse" value="0" min="0"></div>
             </div>
-            <div id="label1" class="mt-3 text-lg font-bold text-gray-700 h-6">Ready</div>
-        </div>
+        </section>
 
-        <div class="die-container w-full flex flex-col items-center">
-            <span class="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Red Die</span>
-            <div id="die2" class="die w-32 h-32 flex flex-col items-center justify-center rounded-2xl bg-white text-6xl">
-                <span>❓</span>
+        <section class="dice-area">
+            <div id="die1" class="die blue">
+                <span id="icon1">❓</span>
+                <span id="text1" class="label">Старт</span>
             </div>
-            <div id="label2" class="mt-3 text-lg font-bold text-gray-700 h-6">Ready</div>
-        </div>
+            <div id="die2" class="die red">
+                <span id="icon2">❓</span>
+                <span id="text2" class="label">Старт</span>
+            </div>
+        </section>
 
-    </main>
+        <section class="result-panel" id="resultPanel">
+            <span style="color:#aaa">Натисни кнопку, щоб кинути кубики</span>
+        </section>
 
-    <div class="w-full mb-6">
-        <button id="rollBtn" class="w-full bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg transform transition-all active:scale-95 text-xl flex items-center justify-center gap-2">
-            <span>🎲</span> ROLL DICE
+        <button id="rollBtn" class="btn-main">
+            🎲 Кинути кубики
         </button>
-    </div>
 
-    <div class="w-full bg-white rounded-xl shadow-sm p-4 mb-4 border border-gray-100">
-        <h3 class="text-xs font-bold text-gray-400 uppercase mb-3 border-b pb-2">Recent Rolls</h3>
-        <div id="historyLog" class="space-y-2">
-            <div class="text-center text-gray-300 text-sm italic py-2">No rolls yet</div>
+        <div class="danger-actions">
+            <button class="btn-danger" onclick="handlePredator('wolf')">🐺 Випав Вовк?</button>
+            <button class="btn-danger" onclick="handlePredator('fox')">🦊 Випала Лисиця?</button>
         </div>
     </div>
 
     <script>
-        // --- 1. Data Configuration ---
-        // Die 1: Rabbit x6, Sheep x2, Pig x1, Cow x1, Horse x1, Wolf x1
-        const DIE_1_FACES = [
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'sheep',  icon: '🐑', name: 'Sheep',  type: 'bg-sheep' },
-            { id: 'sheep',  icon: '🐑', name: 'Sheep',  type: 'bg-sheep' },
-            { id: 'pig',    icon: '🐷', name: 'Pig',    type: 'bg-pig' },
-            { id: 'cow',    icon: '🐮', name: 'Cow',    type: 'bg-cow' },
-            { id: 'horse',  icon: '🐴', name: 'Horse',  type: 'bg-horse' },
-            { id: 'wolf',   icon: '🐺', name: 'Wolf',   type: 'bg-wolf' }
+        // --- Game Data ---
+        const D1 = [
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'},
+            {id:'sheep', icon:'🐑', name:'Вівця'}, {id:'sheep', icon:'🐑', name:'Вівця'},
+            {id:'pig', icon:'🐷', name:'Свиня'}, {id:'cow', icon:'🐮', name:'Корова'},
+            {id:'horse', icon:'🐴', name:'Кінь'}, {id:'wolf', icon:'🐺', name:'Вовк'}
+        ];
+        
+        const D2 = [
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'}, 
+            {id:'rabbit', icon:'🐰', name:'Заєць'}, {id:'rabbit', icon:'🐰', name:'Заєць'},
+            {id:'sheep', icon:'🐑', name:'Вівця'}, {id:'sheep', icon:'🐑', name:'Вівця'},
+            {id:'sheep', icon:'🐑', name:'Вівця'}, {id:'pig', icon:'🐷', name:'Свиня'},
+            {id:'pig', icon:'🐷', name:'Свиня'}, {id:'fox', icon:'🦊', name:'Лисиця'}
         ];
 
-        // Die 2: Rabbit x6, Sheep x3, Pig x2, Fox x1
-        const DIE_2_FACES = [
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'rabbit', icon: '🐰', name: 'Rabbit', type: 'bg-rabbit' },
-            { id: 'sheep',  icon: '🐑', name: 'Sheep',  type: 'bg-sheep' },
-            { id: 'sheep',  icon: '🐑', name: 'Sheep',  type: 'bg-sheep' },
-            { id: 'sheep',  icon: '🐑', name: 'Sheep',  type: 'bg-sheep' },
-            { id: 'pig',    icon: '🐷', name: 'Pig',    type: 'bg-pig' },
-            { id: 'pig',    icon: '🐷', name: 'Pig',    type: 'bg-pig' },
-            { id: 'fox',    icon: '🦊', name: 'Fox',    type: 'bg-fox' }
-        ];
-
-        // --- 2. State & DOM ---
-        let history = [];
-        const btn = document.getElementById('rollBtn');
-        const die1El = document.getElementById('die1');
-        const die2El = document.getElementById('die2');
-        const label1 = document.getElementById('label1');
-        const label2 = document.getElementById('label2');
-        const historyContainer = document.getElementById('historyLog');
-
-        // --- 3. Functions ---
-        function getRandomFace(dieArray) {
-            const randomIndex = Math.floor(Math.random() * dieArray.length);
-            return dieArray[randomIndex];
-        }
-
-        function updateDieVisuals(element, label, faceData) {
-            // Remove old color classes
-            element.className = element.className.replace(/bg-\w+/g, '');
-            // Add new specific color class + standard classes
-            element.classList.add(faceData.type);
+        // --- Audio Context (Synthesis) ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playShakeSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
             
-            // Update Content
-            element.innerHTML = `<span>${faceData.icon}</span>`;
-            label.textContent = faceData.name;
+            // White noise simulation via randomization effectively (simple blip here)
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(40, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
         }
 
-        function addToHistory(result1, result2) {
-            history.unshift({ r1: result1, r2: result2, time: new Date() });
-            if (history.length > 5) history.pop();
-            renderHistory();
+        function playPredatorSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(100, audioCtx.currentTime);
+            osc.frequency.linearRampToValueAtTime(50, audioCtx.currentTime + 0.3);
+            
+            gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
         }
 
-        function renderHistory() {
-            historyContainer.innerHTML = history.map((h, i) => `
-                <div class="history-item flex items-center justify-between bg-gray-50 p-2 rounded-lg border border-gray-100" style="animation-delay: ${i * 50}ms">
-                    <span class="text-xs text-gray-400 font-mono">#${history.length - i}</span>
-                    <div class="flex gap-4">
-                        <span class="text-xl" title="${h.r1.name}">${h.r1.icon}</span>
-                        <span class="text-xl" title="${h.r2.name}">${h.r2.icon}</span>
-                    </div>
-                </div>
-            `).join('');
+        // --- Logic ---
+        function getSecureRandom(arr) {
+            const array = new Uint32Array(1);
+            window.crypto.getRandomValues(array);
+            return arr[array[0] % arr.length];
         }
 
-        function handleRoll() {
-            // Disable button
+        function getInputVal(id) {
+            return parseInt(document.getElementById(`inp-${id}`).value) || 0;
+        }
+
+        function rollDice() {
+            const btn = document.getElementById('rollBtn');
+            const d1El = document.getElementById('die1');
+            const d2El = document.getElementById('die2');
+            const resPanel = document.getElementById('resultPanel');
+
+            // Feedback
+            playShakeSound();
+            if (navigator.vibrate) navigator.vibrate(50);
+            
+            d1El.classList.add('shake');
+            d2El.classList.add('shake');
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
-
-            // Reset Animation
-            die1El.classList.remove('shake');
-            die2El.classList.remove('shake');
-            void die1El.offsetWidth; // Trigger reflow
-            die1El.classList.add('shake');
-            die2El.classList.add('shake');
-
-            // Play sound effect logic could go here
 
             setTimeout(() => {
-                // Calculation
-                const result1 = getRandomFace(DIE_1_FACES);
-                const result2 = getRandomFace(DIE_2_FACES);
+                const r1 = getSecureRandom(D1);
+                const r2 = getSecureRandom(D2);
 
-                // Update UI
-                updateDieVisuals(die1El, label1, result1);
-                updateDieVisuals(die2El, label2, result2);
-                
-                // Add to history
-                addToHistory(result1, result2);
+                // Render Dice
+                document.getElementById('icon1').innerText = r1.icon;
+                document.getElementById('text1').innerText = r1.name;
+                document.getElementById('icon2').innerText = r2.icon;
+                document.getElementById('text2').innerText = r2.name;
 
-                // Re-enable button
+                d1El.classList.remove('shake');
+                d2El.classList.remove('shake');
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
-                die1El.classList.remove('shake');
-                die2El.classList.remove('shake');
+
+                calculateGrowth(r1, r2);
+
             }, 500);
         }
 
-        // --- 4. Event Listeners ---
-        btn.addEventListener('click', handleRoll);
-
-        // --- 5. Single-File PWA Magic ---
-        // This creates a dynamic manifest and service worker from Blob URLs
-        // to satisfy the PWA requirements without needing separate files on the server.
-        
-        // 5a. Dynamic Manifest
-        const manifestObj = {
-            "name": "Super Farmer Dice",
-            "short_name": "SuperFarmer",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#f3f4f6",
-            "theme_color": "#10b981",
-            "icons": [{
-                "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>",
-                "sizes": "192x192",
-                "type": "image/svg+xml"
-            }]
-        };
-        const stringManifest = JSON.stringify(manifestObj);
-        const blobManifest = new Blob([stringManifest], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blobManifest);
-        
-        let link = document.createElement('link');
-        link.rel = 'manifest';
-        link.href = manifestURL;
-        document.head.appendChild(link);
-
-        // 5b. Dynamic Service Worker
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'super-farmer-v1';
-                // Cache Tailwind and the main page
-                const urlsToCache = [
-                    './',
-                    'https://cdn.tailwindcss.com' 
-                ];
-
-                self.addEventListener('install', event => {
-                    event.waitUntil(
-                        caches.open(CACHE_NAME)
-                        .then(cache => cache.addAll(urlsToCache))
-                    );
-                });
-
-                self.addEventListener('fetch', event => {
-                    event.respondWith(
-                        caches.match(event.request)
-                        .then(response => {
-                            // Cache hit - return response
-                            if (response) {
-                                return response;
-                            }
-                            return fetch(event.request);
-                        })
-                    );
-                });
-            `;
+        function calculateGrowth(r1, r2) {
+            const resPanel = document.getElementById('resultPanel');
+            let messages = [];
             
-            const blobSW = new Blob([swCode], {type: 'application/javascript'});
-            const swURL = URL.createObjectURL(blobSW);
+            // Check predators first
+            if (r1.id === 'wolf' || r2.id === 'fox') {
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                playPredatorSound();
+                resPanel.innerHTML = `<div class="danger-info">⚠️ УВАГА: ХИЖАК! <br>Перевір собак або натисни кнопку скидання знизу.</div>`;
+                return;
+            }
 
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register(swURL)
-                .then(reg => console.log('SW Registered', reg))
-                .catch(err => console.log('SW Failed', err));
-            });
+            // Calculate pairs
+            // Logic: (Current + Dice) / 2 = New Offspring
+            let counts = {};
+            [r1, r2].forEach(r => counts[r.id] = (counts[r.id] || 0) + 1);
+
+            let changed = false;
+
+            for (let animal of ['rabbit', 'sheep', 'pig', 'cow', 'horse']) {
+                if (counts[animal] || (animal === r1.id || animal === r2.id)) {
+                    let onDice = counts[animal] || 0;
+                    let onFarm = getInputVal(animal);
+                    let total = onDice + onFarm;
+                    let newBorn = Math.floor(total / 2);
+
+                    if (newBorn > 0) {
+                        messages.push(`+${newBorn} ${getAnimalName(animal, newBorn)}`);
+                        changed = true;
+                    }
+                }
+            }
+
+            if (changed) {
+                resPanel.innerHTML = `<div class="growth-info">${messages.join('<br>')}</div>`;
+            } else {
+                resPanel.innerHTML = `<div style="color:#777">На жаль, пара не склалася.</div>`;
+            }
+        }
+
+        function getAnimalName(id, count) {
+            const names = {
+                rabbit: ['Заєць', 'Зайця', 'Зайців'],
+                sheep: ['Вівця', 'Вівці', 'Овець'],
+                pig: ['Свиня', 'Свині', 'Свиней'],
+                cow: ['Корова', 'Корови', 'Корів'],
+                horse: ['Кінь', 'Коні', 'Коней']
+            };
+            // Very simple pluralization for demo
+            return count === 1 ? names[id][0] : names[id][2];
+        }
+
+        function handlePredator(type) {
+            if(!confirm('Ви впевнені? Це скине тварин згідно правил.')) return;
+            
+            if (type === 'wolf') {
+                // Wolf eats everything except Horse (and small dog, but we assume dog logic is manual)
+                document.getElementById('inp-rabbit').value = 0;
+                document.getElementById('inp-sheep').value = 0;
+                document.getElementById('inp-pig').value = 0;
+                document.getElementById('inp-cow').value = 0;
+                alert('Вовк з\'їв усе, крім Коня (якщо був).');
+            } else if (type === 'fox') {
+                // Fox eats rabbits only
+                document.getElementById('inp-rabbit').value = 0;
+                alert('Лисиця з\'їла всіх зайців.');
+            }
+            if (navigator.vibrate) navigator.vibrate(200);
+        }
+
+        document.getElementById('rollBtn').addEventListener('click', rollDice);
+        
+        // PWA Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('SW Registered'))
+                .catch(e => console.error('SW Fail', e));
         }
     </script>
 </body>
