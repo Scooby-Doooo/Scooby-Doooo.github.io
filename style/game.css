@@ -1,0 +1,89 @@
+/* Game Container */
+.game-container {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+    /* Below question container */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.game-content {
+    text-align: center;
+    z-index: 10;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.game-title {
+    font-size: 2.5rem;
+    color: #ff69b4;
+    margin-bottom: 20px;
+}
+
+.game-instruction {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+.game-stats {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.game-btn {
+    padding: 15px 40px;
+    font-size: 1.5rem;
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.game-btn:hover {
+    transform: scale(1.05);
+    background-color: #ff1493;
+}
+
+/* Hearts */
+.game-heart {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background-image: url('../img/heart.svg');
+    /* Assuming heart.svg exists */
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transition: transform 0.1s;
+    animation: floatHeart 2s infinite ease-in-out alternate;
+}
+
+.game-heart:hover {
+    transform: scale(1.2);
+}
+
+@keyframes floatHeart {
+    from {
+        transform: translateY(0);
+    }
+
+    to {
+        transform: translateY(-10px);
+    }
+}
