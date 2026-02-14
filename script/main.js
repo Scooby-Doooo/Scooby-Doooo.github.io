@@ -26,55 +26,7 @@ const animationTimeline = () => {
     skewX: "-15deg",
   };
 
-  // Question Interaction Logic
-  const questionContainer = document.querySelector(".question-container");
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-  const loveBtn = document.getElementById("loveBtn");
 
-  const noTexts = [
-    "Are you sure?",
-    "Think again!",
-    "Last chance!",
-    "Surely not?",
-    "You might regret this!",
-    "Give it another thought!",
-    "Are you absolutely certain?",
-    "This could be a mistake!",
-    "Have a heart!",
-    "Don't be so cold!",
-    "Change of heart?",
-    "Wouldn't you reconsider?",
-    "Is that your final answer?",
-    "You're breaking my heart ;(",
-  ];
-  let noClickCount = 0;
-
-  noBtn.addEventListener("click", () => {
-    if (noClickCount < noTexts.length) {
-      noBtn.innerText = noTexts[noClickCount];
-      noClickCount++;
-      // Optional: Add random movement or shake effect here
-      const randomX = Math.random() * 100 - 50;
-      const randomY = Math.random() * 100 - 50;
-      TweenMax.to(noBtn, 0.2, { x: randomX, y: randomY });
-    } else {
-      TweenMax.to(noBtn, 0.5, { opacity: 0, display: "none" });
-    }
-  });
-
-  const resumeTimeline = () => {
-    TweenMax.to(questionContainer, 0.5, {
-      opacity: 0,
-      pointerEvents: "none",
-      onComplete: () => {
-        tl.resume();
-      },
-    });
-  };
-
-  // yesBtn.addEventListener("click", resumeTimeline); 
-  loveBtn.addEventListener("click", resumeTimeline);
 
   const tl = new TimelineMax();
 
@@ -85,10 +37,7 @@ const animationTimeline = () => {
       opacity: 0,
       y: 10,
     })
-    .from(".two", 0.4, {
-      opacity: 0,
-      y: 10,
-    })
+
     .to(
       ".one",
       0.7,
@@ -98,15 +47,7 @@ const animationTimeline = () => {
       },
       "+=2.5"
     )
-    .to(
-      ".two",
-      0.7,
-      {
-        opacity: 0,
-        y: 10,
-      },
-      "-=1"
-    )
+
     .from(".three", 0.7, {
       opacity: 0,
       y: 10,
@@ -324,13 +265,7 @@ const animationTimeline = () => {
       y: 30,
       zIndex: "-1",
     })
-    .call(() => {
-      tl.pause();
-      TweenMax.to(questionContainer, 0.5, {
-        opacity: 1,
-        pointerEvents: "all",
-      });
-    })
+
     .staggerFrom(".nine p", 1, ideaTextTrans, 1.2)
     .to(
       ".last-smile",
@@ -461,11 +396,7 @@ const animationTimeline = () => {
 
       setTimeout(() => {
         hideGame();
-        // Show proper question container
-        TweenMax.to(questionContainer, 0.5, {
-          opacity: 1,
-          pointerEvents: "all",
-        });
+        tl.resume();
       }, 6000);
     } else {
       gameTitle.innerText = "Час вийшов!";
